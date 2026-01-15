@@ -3,6 +3,8 @@
 :license: MIT, see LICENSE for more details.
 """
 
+from __future__ import annotations
+
 from .helpers import (
     random_delay
 )

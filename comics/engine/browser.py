@@ -97,7 +97,7 @@ class StealthBrowser:
         self.page = await self.context.new_page()
 
     
-    async def navigate(self, url: str, wait_for: str = "networkidle") -> None:
+    async def navigate(self, url: str, wait_for: str = "domcontentloaded") -> None:
         """|coro|
 
         Navigate to URL and wait for page load.
@@ -125,7 +125,6 @@ class StealthBrowser:
             raise BrowserNotStartedError()
 
         try:
-            await random_delay(0.5, 1.5)
             await self.page.goto(url, wait_until=wait_for, timeout=60000)
             await random_delay(1, 2)
         except Exception as e:

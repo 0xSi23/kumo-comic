@@ -25,6 +25,7 @@ SOFTWARE.
 from __future__ import annotations
 
 from typing import List, Optional, TYPE_CHECKING
+from playwright.async_api import Page
 from abc import ABC, abstractmethod
 
 from ..exceptions import BrowserNotStartedError
@@ -47,6 +48,20 @@ class BaseConnector(ABC):
 
     def __init__(self):
         self.browser: Optional["StealthBrowser"] = None
+
+    
+    @property
+    def page(self) -> Page:
+        """Get the current browser page.
+        
+        Raises
+        ------
+        :class:`BrowserNotStartedError`
+            If the browser is not initialized.
+        """
+
+        self._ensure_browser()
+        return self.browser.page
     
 
     def can_handle(self, url: str) -> bool:

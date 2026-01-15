@@ -17,6 +17,14 @@ __version__ = "0.1.0"
 
 from .engine import StealthBrowser
 
+from .core import (
+    BaseConnector, 
+    ConnectorManager,
+    Comic,
+    Chapter,
+    Page,
+)
+
 from .exceptions import (
     KumoComicError,
     BrowserError,
@@ -24,5 +32,9 @@ from .exceptions import (
     BrowserNavigationError,
     CloudflareBlockedError,
     ConnectorError,
-    ConnectorNotFoundError
+    ConnectorNotFoundError,
+    ContentError,
+    NoChaptersFoundError,
+    NoImagesFoundError,
 )
+

@@ -88,4 +88,28 @@ class ConnectorNotFoundError(ConnectorError):
         message = f"No connector found for URL: {url}"
         
         super().__init__(message)
-        
+
+
+# ============================================================================
+# Content Errors
+# ============================================================================
+
+class ContentError(KumoComicError):
+    """Base exception for content-related errors."""
+    pass
+
+
+class NoChaptersFoundError(ContentError):
+    """Raised when no chapters are found on a manga page."""
+    
+    def __init__(self, comic_url: str):
+        self.comic_url = comic_url
+        super().__init__(f"No chapters found at: {comic_url}")
+
+
+class NoImagesFoundError(ContentError):
+    """Raised when no images are found on a chapter page."""
+    
+    def __init__(self, chapter_url: str):
+        self.chapter_url = chapter_url
+        super().__init__(f"No images found at: {chapter_url}")

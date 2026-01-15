@@ -28,6 +28,7 @@ from typing import List, Optional, TYPE_CHECKING
 from pathlib import Path
 
 from .base_connector import BaseConnector
+from ..engine import StealthBrowser
 from ..exceptions import ConnectorNotFoundError
 
 import pkgutil
@@ -37,8 +38,10 @@ import importlib
 class ConnectorManager:
     """Manages all available website connectors."""
     
-    def __init__(self):
+    def __init__(self, browser: Optional["StealthBrowser"] = None):
         self._connectors: dict[str, BaseConnector] = {}
+        self._browser = browser
+
         self._load_connectors()
 
     
@@ -55,8 +58,8 @@ class ConnectorManager:
             
             try:
                 module = importlib.import_module(
-                    f"..connectors.{module_name}", 
-                    package="comics"
+                    f".connectors.{module_name}", 
+                    package=__package__.rsplit('.', 1)[0]  # "comics"
                 )
                 
                 # Find connector class in module
@@ -68,6 +71,7 @@ class ConnectorManager:
                         and attr is not BaseConnector
                     ):
                         connector = attr()
+                        connector.init_browser(self._browser)
                         self._connectors[connector.name.lower()] = connector
                         
             except Exception as e:
