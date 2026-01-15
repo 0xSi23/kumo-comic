@@ -68,3 +68,24 @@ class CloudflareBlockedError(BrowserError):
     def __init__(self, url: str):
         self.url = url
         super().__init__(f"Cloudflare blocked access to: {url}")
+
+
+# ============================================================================
+# Connector Errors
+# ============================================================================
+
+class ConnectorError(KumoComicError):
+    """Base exception for connector-related errors."""
+    pass
+
+
+class ConnectorNotFoundError(ConnectorError):
+    """Raised when no connector is found for the given URL."""
+    
+    def __init__(self, url: str):
+        self.url = url
+        
+        message = f"No connector found for URL: {url}"
+        
+        super().__init__(message)
+        

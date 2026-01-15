@@ -23,4 +23,6 @@ from .exceptions import (
     BrowserNotStartedError,
     BrowserNavigationError,
     CloudflareBlockedError,
+    ConnectorError,
+    ConnectorNotFoundError
 )

@@ -21,3 +21,116 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
+from __future__ import annotations
+
+from typing import List, Optional, TYPE_CHECKING
+from abc import ABC, abstractmethod
+
+from ..exceptions import BrowserNotStartedError
+
+if TYPE_CHECKING:
+    from .models import Comic, Chapter
+    from ..engine import StealthBrowser
+
+
+class BaseConnector(ABC):
+    """
+    Abstract base class for website connectors.
+    Each website should have its own connector inheriting from this class.
+    """
+    
+    name: str = "Unknown"
+    base_url: str = ""
+    keyword = ""
+    
+
+    def __init__(self):
+        self.browser: Optional["StealthBrowser"] = None
+    
+
+    def can_handle(self, url: str) -> bool:
+        """
+        Check if this connector can handle the given URL.
+        
+        Parameters
+        ----------
+        url: :class:`str`
+            The URL to check.
+
+        Returns
+        -------
+        :class:`bool`
+            True if this connector can handle the URL, False otherwise.
+        """
+
+        return self.keyword in url
+
+    
+    @abstractmethod
+    async def get_comic_info(self, url: str) -> "Comic":
+        """|coro|
+        Fetch comic information from URL.
+
+        Parameters
+        ----------
+        url: :class:`str`
+            The URL of the comic.
+
+        Returns
+        -------
+        :class:`Comic`
+            The comic information.
+        """
+
+        pass
+
+
+    @abstractmethod
+    async def get_chapter_images(self, chapter: "Chapter") -> List[str]:
+        """|coro|
+        Fetch all image URLs from a chapter.
+        
+        Parameters
+        ----------
+        chapter: :class:`Chapter`
+            The chapter to fetch images from.
+
+        Returns
+        -------
+        :class:`List[str]`
+            List of image URLs in the chapter.
+        """
+
+        pass
+
+    
+    def _ensure_browser(self) -> None:
+        """Ensure browser is initialized before operations.
+        
+        Raises
+        ------
+        :class:`BrowserNotStartedError`
+            If the browser is not initialized.
+        """
+        if self.browser is None:
+            raise BrowserNotStartedError()
+
+    
+    def init_browser(self, browser: "StealthBrowser") -> None:
+        """
+        Initialize browser reference
+        
+        Parameters
+        ----------
+        browser: :class:`StealthBrowser`
+            The browser to use.
+        """
+
+        self.browser = browser
+    
+
+    def close(self):
+        """Cleanup resources"""
+
+        self.browser = None
