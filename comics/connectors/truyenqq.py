@@ -49,9 +49,8 @@ class TruyenQQConnector(BaseConnector):
     
     # CSS Selectors
     CHAPTER_LIST_SELECTOR = ".works-chapter-item a, .list_chapter a"
-    IMAGE_CONTAINER_SELECTOR = ".chapter_content"
     IMAGE_SELECTOR = ".chapter_content img"
-    COMIC_TITLE_SELECTOR = "h1"
+    TITLE_SELECTOR = "h1"
 
     
     async def get_comic_info(self, url: str) -> Comic:
@@ -80,7 +79,7 @@ class TruyenQQConnector(BaseConnector):
         
         data: Dict = await page.evaluate(f"""
             () => {{
-                const titleEl = document.querySelector('{self.COMIC_TITLE_SELECTOR}');
+                const titleEl = document.querySelector('{self.TITLE_SELECTOR}');
                 const title = titleEl ? titleEl.innerText.trim() : 'Unknown Comic';
                 
                 const chapterEls = document.querySelectorAll('{self.CHAPTER_LIST_SELECTOR}');
