@@ -31,8 +31,8 @@ import re
 
 
 @dataclass
-class Page:
-    """Represents a single page/image in a chapter"""
+class Image:
+    """Represents a single image in a chapter"""
     index: int
     url: str
     filename: str = ""
@@ -49,7 +49,7 @@ class Chapter:
     id: str
     title: str
     url: str
-    pages: List[Page] = field(default_factory=list)
+    images: List[Image] = field(default_factory=list)
     
     @property
     def safe_title(self) -> str:

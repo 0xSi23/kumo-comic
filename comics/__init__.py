@@ -22,7 +22,7 @@ from .core import (
     ConnectorManager,
     Comic,
     Chapter,
-    Page,
+    Image,
 )
 
 from .exceptions import (

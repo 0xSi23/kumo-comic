@@ -24,7 +24,7 @@ SOFTWARE.
 
 from __future__ import annotations
 
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, Literal, TYPE_CHECKING
 from playwright.async_api import async_playwright, Browser, BrowserContext, Page
 from playwright_stealth import Stealth
 
@@ -97,7 +97,11 @@ class StealthBrowser:
         self.page = await self.context.new_page()
 
     
-    async def navigate(self, url: str, wait_for: str = "domcontentloaded") -> None:
+    async def navigate(
+        self, 
+        url: str, 
+        wait_for: Literal["commit", "domcontentloaded", "load", "networkidle"] = "domcontentloaded"
+    ) -> None:
         """|coro|
 
         Navigate to URL and wait for page load.
@@ -109,8 +113,9 @@ class StealthBrowser:
         url: :class:`str`
             The URL to navigate to.
         
-        wait_for: :class:`str`
-            The event to wait for before considering navigation complete.
+        wait_for: :class:`Literal["commit", "domcontentloaded", "load", "networkidle"]`
+            The event to wait for before considering navigation complete. 
+            Defaults to ``"domcontentloaded"``.
 
         Raises
         ------

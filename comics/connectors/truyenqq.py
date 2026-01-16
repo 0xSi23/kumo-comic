@@ -28,13 +28,14 @@ from typing import List, Union, Dict, overload, TYPE_CHECKING
 from playwright.async_api import Page
 
 from ..core.base_connector import BaseConnector
-from ..core.models import Comic, Chapter, Page
+from ..core.models import Comic, Chapter, Image
 from ..utils.helpers import random_delay
 from ..exceptions import (
     NoChaptersFoundError,
     NoImagesFoundError,
 )
 
+import aiohttp
 import re
 
 class TruyenQQConnector(BaseConnector):
@@ -125,12 +126,12 @@ class TruyenQQConnector(BaseConnector):
     
 
     @overload
-    async def get_chapter_images(self, chapter: Chapter) -> List[str]: ...
+    async def get_chapter_images(self, chapter: Chapter) -> List[Image]: ...
     
     @overload
-    async def get_chapter_images(self, chapter: str) -> List[str]: ...
+    async def get_chapter_images(self, chapter: str) -> List[Image]: ...
 
-    async def get_chapter_images(self, chapter: Union[Chapter, str]) -> List[str]:
+    async def get_chapter_images(self, chapter: Union[Chapter, str]) -> List[Image]:
         """|coro|
         Fetch all image URLs from a chapter.
         
@@ -165,15 +166,21 @@ class TruyenQQConnector(BaseConnector):
         # await random_delay(0.5, 1)
         
         # Extract image URLs
-        image_urls = await self._extract_images(self.browser.page)
+        image_urls = await self._extract_image_urls(self.browser.page)
         
         if not image_urls:
             raise NoImagesFoundError(chapter.url)
+
+        for idx, url in enumerate(image_urls):
+            chapter.images.append(Image(
+                url=url,
+                index=idx
+            ))
         
-        return image_urls
+        return chapter.images
     
 
-    async def _extract_images(self, page: Page) -> List[str]:
+    async def _extract_image_urls(self, page: Page) -> List[str]:
         """|coro|
         
         Extract images using JavaScript for performance.
