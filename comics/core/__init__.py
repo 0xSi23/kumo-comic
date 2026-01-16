@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from .connector_manager import ConnectorManager
 from .base_connector import BaseConnector
-from .models import Comic, Chapter, Image
+from .models import Comic, Chapter, Image, DownloadTask
 
 __all__ = [
     "BaseConnector",
@@ -15,4 +15,5 @@ __all__ = [
     "Comic",
     "Chapter",
     "Image",
+    "DownloadTask",
 ]

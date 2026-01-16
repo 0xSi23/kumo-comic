@@ -6,11 +6,13 @@
 from __future__ import annotations
 
 from .helpers import (
-    random_delay
+    random_delay,
+    maybe_coroutine,
+    get_image_extension
 )
 
 from .user_agents import (
-    get_random_user_agent,
+    get_random_user_agent
 )
 
 
@@ -20,4 +22,6 @@ __all__ = [
     "extract_domain",
     "format_size",
     "get_random_user_agent",
+    "maybe_coroutine",
+    "get_image_extension"
 ]

@@ -1,7 +1,7 @@
 """
 MIT License
 
-Copyright (c) 2026 - present 0xSi23
+Copyright (c) 2026 0xSi23
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,8 +35,16 @@ from ..exceptions import (
     NoImagesFoundError,
 )
 
-import aiohttp
 import re
+
+
+class TruyenQQImage(Image):
+    """Represents a single image in a chapter with referer support"""
+    
+    def __init__(self, index: int, url: str, referer: str = "", filename: str = ""):
+        super().__init__(index=index, url=url, filename=filename)
+        self._referer = referer
+
 
 class TruyenQQConnector(BaseConnector):
     """
@@ -172,9 +180,10 @@ class TruyenQQConnector(BaseConnector):
             raise NoImagesFoundError(chapter.url)
 
         for idx, url in enumerate(image_urls):
-            chapter.images.append(Image(
+            chapter.images.append(TruyenQQImage(
                 url=url,
-                index=idx
+                index=idx,
+                referer=chapter.url
             ))
         
         return chapter.images

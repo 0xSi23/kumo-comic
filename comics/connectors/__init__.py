@@ -5,9 +5,10 @@
 
 from __future__ import annotations
 
-from .truyenqq import TruyenQQConnector
+from .truyenqq import TruyenQQImage, TruyenQQConnector
 
 
 __all__ = [
     "TruyenQQConnector",
+    "TruyenQQImage",
 ]

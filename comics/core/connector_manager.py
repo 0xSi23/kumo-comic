@@ -1,7 +1,7 @@
 """
 MIT License
 
-Copyright (c) 2026 - present 0xSi23
+Copyright (c) 2026 0xSi23
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -98,6 +98,7 @@ class ConnectorManager:
 
         raise_error: :class:`bool`
             If True and using ``url``, raise :class:`ConnectorNotFoundError` if no connector is found. 
+            
             Defaults to ``False``. Only applies when ``url`` is provided.
 
         Returns

@@ -1,7 +1,7 @@
 """
 MIT License
 
-Copyright (c) 2026 - present 0xSi23
+Copyright (c) 2026 0xSi23
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from __future__ import annotations
-
-from typing import List, Optional, TYPE_CHECKING
+from typing import List
 
 
 class KumoComicError(Exception):
@@ -57,7 +55,7 @@ class BrowserNavigationError(BrowserError):
         
         message = f"Failed to navigate to: {url}"
         if reason:
-            message += f" ({reason})"
+            message += f" ({reason or 'No reason provided'})"
         
         super().__init__(message)
 
@@ -113,3 +111,47 @@ class NoImagesFoundError(ContentError):
     def __init__(self, chapter_url: str):
         self.chapter_url = chapter_url
         super().__init__(f"No images found at: {chapter_url}")
+
+
+# ============================================================================
+# Download Errors
+# ============================================================================
+
+class DownloadError(KumoComicError):
+    """Base exception for download-related errors."""
+    pass
+
+
+class TaskDownloadError(DownloadError):
+    """
+    Raised when a download task fails after all retry attempts.
+    
+    Contains all errors encountered during retries for debugging.
+    
+    Attributes
+    ----------
+    url: :class:`str`
+        The URL that failed to download.
+
+    original_errors: :class:`List[Exception]`
+        List of exceptions encountered during each retry attempt.
+
+    last_error: :class:`Optional[Exception]`
+        The last exception encountered.
+
+    attempts: :class:`int`
+        The number of download attempts made.
+    """
+    
+    def __init__(self, url: str, errors: List[Exception]):
+        self.url = url
+        self.original_errors = errors
+        self.last_error = errors[-1] if errors else None
+        self.attempts = len(errors)
+        
+        message = f"Failed to download {url} after {self.attempts} attempts"
+        if self.last_error:
+            message += f": {self.last_error}"
+        
+        super().__init__(message)
+        
