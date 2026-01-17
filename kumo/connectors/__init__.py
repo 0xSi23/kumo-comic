@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
-from .browser import StealthBrowser
+from .truyenqq import TruyenQQConnector
 
 
 __all__ = [
-    "StealthBrowser",
+    "TruyenQQConnector",
 ]

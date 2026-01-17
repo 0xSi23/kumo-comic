@@ -24,15 +24,15 @@ SOFTWARE.
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from typing import List, Optional, TYPE_CHECKING
 from playwright.async_api import Page
-from abc import ABC, abstractmethod
 
 from ..exceptions import BrowserNotStartedError
 
 if TYPE_CHECKING:
-    from .models import Comic, Chapter
     from ..engine import StealthBrowser
+    from .models import Comic, Chapter, Image
 
 
 class BaseConnector(ABC):
@@ -102,7 +102,7 @@ class BaseConnector(ABC):
 
 
     @abstractmethod
-    async def get_chapter_images(self, chapter: "Chapter") -> List[str]:
+    async def get_chapter_images(self, chapter: "Chapter") -> List["Image"]:
         """|coro|
         Fetch all image URLs from a chapter.
         

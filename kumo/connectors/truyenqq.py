@@ -38,14 +38,6 @@ from ..exceptions import (
 import re
 
 
-class TruyenQQImage(Image):
-    """Represents a single image in a chapter with referer support"""
-    
-    def __init__(self, index: int, url: str, referer: str = "", filename: str = ""):
-        super().__init__(index=index, url=url, filename=filename)
-        self._referer = referer
-
-
 class TruyenQQConnector(BaseConnector):
     """
     Connector for TruyenQQ website.
@@ -98,7 +90,7 @@ class TruyenQQConnector(BaseConnector):
                     return {{ url: href, title: text }};
                 }}).filter(c => c.url && c.title);
                 
-                return {{ title, chapters }};
+                return {{ title, chapters: chapters.reverse() }};
             }}
         """)
         
@@ -180,10 +172,9 @@ class TruyenQQConnector(BaseConnector):
             raise NoImagesFoundError(chapter.url)
 
         for idx, url in enumerate(image_urls):
-            chapter.images.append(TruyenQQImage(
+            chapter.images.append(Image(
                 url=url,
-                index=idx,
-                referer=chapter.url
+                index=idx
             ))
         
         return chapter.images

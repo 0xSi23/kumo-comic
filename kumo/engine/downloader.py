@@ -31,16 +31,17 @@ from typing import (
     Tuple,
     Optional, 
     Dict,
-    Union
+    Union,
 )
 from urllib.parse import urlparse
 
 from ..utils import (
     random_delay, 
     maybe_coroutine, 
-    get_image_extension as _get_img_ext
+    get_image_extension as _get_img_ext,
+    ensure_path
 )
-from ..core import DownloadTask
+from ..core import DownloadTask, Chapter, Comic
 from ..exceptions import TaskDownloadError
 
 import asyncio
@@ -66,8 +67,9 @@ class ImageDownloader:
         .. note:: 
             Keep this low to avoid being blocked by anti-bot measures.
 
-    delay_range: :class:`Tuple[float, float]`
-        Min and max delay (in seconds) between downloads. Defaults to ``(1.0, 3.0)``.
+    delay_range: :class:`Optional[Tuple[float, float]]`
+        Min and max delay (in seconds) between downloads. Use ``(x, 0.0)`` or ``None`` to effectively disable delay.
+        Defaults to ``(1.0, 3.0)``.
 
     max_retries: :class:`int`
         Maximum number of retries for failed downloads. Defaults to ``3``.
@@ -82,7 +84,7 @@ class ImageDownloader:
     def __init__(
         self,
         max_concurrent: int = 3,  # Low to avoid being blocked
-        delay_range: Tuple[float, float] = (1.0, 3.0),
+        delay_range: Optional[Tuple[float, float]] = (1.0, 3.0),
         max_retries: int = 3,
         timeout: int = 60,
         default_headers: Optional[Dict[str, str]] = None
@@ -192,7 +194,8 @@ class ImageDownloader:
             for attempt in range(self.max_retries):
                 try:
                     # Random delay before download
-                    await random_delay(*self.delay_range)
+                    if self.delay_range:
+                        await random_delay(*self.delay_range)
                     
                     headers = self._build_headers(task)
                     
@@ -282,58 +285,4 @@ class ImageDownloader:
         self.__total_failed += failed_count
 
         return (downloaded_count, failed_count)
-    
-
-    async def download_all(
-        self,
-        urls: List[str],
-        save_dir: Union[str, Path],
-        referer: str = "",
-        headers: Optional[Dict[str, str]] = None,
-        cookies: Optional[Dict[str, str]] = None,
-        *,
-        task_cls = DownloadTask,
-    ) -> Tuple[int, int]:
-        """|coro|
-
-        Convenience method for simple use cases - download all URLs to same directory.
-        
-        This is a backward-compatible wrapper around `download_tasks()`.
-        
-        Parameters
-        ----------
-        urls: :class:`List[str]`
-            List of image URLs to download.
-        save_dir: :class:`Union[str, Path]`
-            Directory to save all images.
-        referer: :class:`str`
-            Referer header to use for all downloads.
-        headers: :class:`Optional[Dict[str, str]]`
-            Headers to use for all downloads.
-        cookies: :class:`Optional[Dict[str, str]]`
-            Cookies to use for all downloads.
-        task_cls: :class:`Type[DownloadTask]`
-            Custom `DownloadTask` class to use. Defaults to `DownloadTask`.
-
-        Returns
-        -------
-        :class:`Tuple[int, int]`
-            Tuple of (downloaded_count, failed_count)
-        """
-        save_dir = Path(save_dir) if isinstance(save_dir, str) else save_dir
-        tasks = []
-
-        for idx, url in enumerate(urls):
-            ext = _get_img_ext(url)
-            filename = f"{idx:03d}{ext}"
-            
-            tasks.append(task_cls(
-                url=url,
-                save_path=save_dir / filename,
-                headers=headers or {},
-                cookies=cookies or {},
-                referer=referer,
-            ))
-        
-        return await self.download_tasks(tasks)
     

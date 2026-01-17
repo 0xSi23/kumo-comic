@@ -47,7 +47,7 @@ kumocomic
 
 ```python
 import asyncio
-from kumocomic import download_chapter, download_manga
+from kumocomic import download_chapter, download_comic
 
 # Download single chapter
 asyncio.run(download_chapter("https://example.com/manga/chapter-1"))
@@ -59,17 +59,25 @@ asyncio.run(download_manga("https://example.com/manga"))
 ### Custom Connector
 
 ```python
-from kumocomic import BaseConnector, Manga, Chapter
+from kumo import (
+    BaseConnector, 
+    Comic, Chapter, Image
+)
 
 class MyConnector(BaseConnector):
     name = "MySite"
-    domains = ["mysite.com"]
-    
-    async def get_manga_info(self, url: str) -> Manga:
+    base_url = "https://mysite.com"
+    keyword = "mysite"
+
+    async def can_handle(self, url: str) -> bool:
         # Implementation
         pass
     
-    async def get_chapter_images(self, chapter: Chapter) -> list[str]:
+    async def get_comic_info(self, url: str) -> Comic:
+        # Implementation
+        pass
+    
+    async def get_chapter_images(self, chapter: Chapter) -> list[Image]:
         # Implementation
         pass
 ```

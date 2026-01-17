@@ -8,7 +8,8 @@ from __future__ import annotations
 from .helpers import (
     random_delay,
     maybe_coroutine,
-    get_image_extension
+    get_image_extension,
+    ensure_path
 )
 
 from .user_agents import (
@@ -23,5 +24,6 @@ __all__ = [
     "format_size",
     "get_random_user_agent",
     "maybe_coroutine",
-    "get_image_extension"
+    "get_image_extension",
+    "ensure_path"
 ]

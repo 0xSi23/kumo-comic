@@ -24,6 +24,7 @@ SOFTWARE.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import (
     Awaitable, 
     Callable, 
@@ -58,7 +59,10 @@ async def random_delay(min_seconds: float = 1.0, max_seconds: float = 3.0) -> No
     max_seconds: :class:`float` = 3.0
         Maximum delay in seconds. Defaults to ``3.0`` seconds.
     """
-
+    
+    if max_seconds <= 0.0:
+        return
+    
     delay = random.uniform(min_seconds, max_seconds)
     await asyncio.sleep(delay)
 
@@ -80,10 +84,10 @@ async def maybe_coroutine(
     func: :class:`Callable`
         The function or coroutine to execute.
 
-    \*args
+    *args
         The arguments to pass to the function.
 
-    \*\*kwargs
+    **kwargs
         The keyword arguments to pass to the function.
         
     Returns
@@ -119,3 +123,21 @@ def get_image_extension(url: str) -> str:
             return ext
         
     return '.jpg'
+
+
+def ensure_path(path: Union[str, Path]) -> Path:
+    """
+    Ensure the given path is a Path object.
+    
+    Parameters
+    ----------
+    path: :class:`Union[str, Path]`
+        The path to ensure.
+
+    Returns
+    -------
+    :class:`Path`
+        The ensured Path object.
+    """
+
+    return Path(path) if isinstance(path, str) else path

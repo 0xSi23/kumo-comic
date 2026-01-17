@@ -5,10 +5,11 @@
 
 from __future__ import annotations
 
-from .truyenqq import TruyenQQImage, TruyenQQConnector
+from .browser import StealthBrowser
+from .downloader import ImageDownloader
 
 
 __all__ = [
-    "TruyenQQConnector",
-    "TruyenQQImage",
+    "StealthBrowser",
+    "ImageDownloader",
 ]

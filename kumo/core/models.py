@@ -29,11 +29,14 @@ from typing import (
     Optional,
     Union,
     Awaitable,
-    Dict
+    Dict,
+    Any
 )
 from pathlib import Path
 from dataclasses import dataclass, field
+
 from ..exceptions import DownloadError
+from ..utils import ensure_path
 
 import re
 
@@ -64,11 +67,11 @@ class DownloadTask:
     """
     
     url: str
-    save_path: Path
+    save_path: Union[str, Path]
     headers: Dict[str, str] = field(default_factory=dict)
     cookies: Dict[str, str] = field(default_factory=dict)
     referer: str = ""
-    metadata: Dict = field(default_factory=dict)
+    extras: Dict[str, Any] = field(default_factory=dict)
     
     def __post_init__(self):
         if isinstance(self.save_path, str):
@@ -76,14 +79,14 @@ class DownloadTask:
 
     
     def on_success(self) -> Union[None, Awaitable[None]]:
-        """|maybe coro|
+        """
         
         Called when download completes successfully. Override in subclass."""
 
         pass
     
     def on_error(self, error: Optional[DownloadError]) -> Union[None, Awaitable[None]]:
-        """|maybe coro|
+        """
         Called when download fails after all retries. Override in subclass.
 
         Parameters
@@ -138,14 +141,14 @@ class Image:
             The download task for this image.
         """
 
-        save_dir = Path(save_dir) if isinstance(save_dir, str) else save_dir
+        save_dir = ensure_path(save_dir)
         return DownloadTask(
             url=self.url,
             save_path=save_dir / self.filename,
             headers=headers or {},
             cookies=cookies or {},
             referer=referer,
-            metadata={"index": self.index},
+            extras={"index": self.index},
         )
 
 
@@ -159,7 +162,8 @@ class Chapter:
     images: List[Image] = field(default_factory=list)
     headers: Dict[str, str] = field(default_factory=dict)
     cookies: Dict[str, str] = field(default_factory=dict)
-    referer: str = ""
+
+    _loaded_images: bool = field(default=False, init=False)
     
     @property
     def safe_title(self) -> str:
@@ -186,7 +190,7 @@ class Chapter:
             List of download tasks for all images in this chapter.
         """
 
-        save_dir = Path(save_dir) if isinstance(save_dir, str) else save_dir
+        save_dir = ensure_path(save_dir)
         tasks = []
         
         for image in self.images:
@@ -195,8 +199,8 @@ class Chapter:
                 save_path=save_dir / image.filename,
                 headers=self.headers.copy(),
                 cookies=self.cookies.copy(),
-                referer=self.referer,
-                metadata={"index": image.index}
+                referer=self.url,
+                extras={"index": image.index}
             ))
         
         return tasks
